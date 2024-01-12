@@ -5,13 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Hairdresser extends Model
+class Appointment extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'category',
+        'hairdresser_id',
+        'customer_id',
+        'slot',
+        'description',
         // Aggiungi qui altri campi se necessario
     ];
 }
