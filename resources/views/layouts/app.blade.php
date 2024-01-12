@@ -23,10 +23,10 @@
     <div id="app">
 
 
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+        <nav class="navbar navbar-expand-md navbar-light bg-light shadow-sm">
             <div class="container">
                 <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
-                    <h1 class="text-danger">Officina 05 Acconciatori</h1>
+                    <img width="60" src="{{ asset('assets/img/o05a-logo.jpg') }}" alt="">
                     {{-- config('app.name', 'Laravel') --}}
                 </a>
 
