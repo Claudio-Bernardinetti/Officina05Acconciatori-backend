@@ -12,8 +12,19 @@ class Appointment extends Model
     protected $fillable = [
         'hairdresser_id',
         'customer_id',
+        'appointment_time',
         'slot',
         'description',
         // Aggiungi qui altri campi se necessario
     ];
+
+    public function customer()
+{
+    return $this->belongsTo(Customer::class);
+}
+
+public function hairdresser()
+{
+    return $this->belongsTo(Hairdresser::class);
+}
 }

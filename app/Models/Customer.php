@@ -14,4 +14,9 @@ class Customer extends Model
         'category',
         // Aggiungi qui altri campi se necessario
     ];
+
+    public function appointments()
+{
+    return $this->hasMany(Appointment::class);
+}
 }

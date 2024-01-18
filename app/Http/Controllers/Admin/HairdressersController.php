@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Hairdresser;
+use Illuminate\Support\Facades\Validator;
 
 class HairdressersController extends Controller
 {
@@ -14,10 +15,28 @@ class HairdressersController extends Controller
         return response()->json($hairdressers);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        // Questo metodo può essere implementato nel frontend
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:255',
+            'category' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        $hairdresser = new Hairdresser;
+        $hairdresser->name = $request->name;
+        $hairdresser->category = $request->category;
+        $hairdresser->save();
+
+        return response()->json($hairdresser);
+
+        // ... altri metodi ...
     }
+
+    
 
     public function store(Request $request)
     {
