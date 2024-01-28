@@ -20,7 +20,7 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view('admin.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -29,6 +29,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/admin/appointments', [App\Http\Controllers\Admin\AppointmentsController::class, 'index'])->name('appointments.index');
+Route::get('/admin/appointments', [AppointmentsController::class, 'index'])->name('appointments.index');
+
+Route::get('/admin/appointments/show/{date}', [AppointmentsController::class, 'showByDate'])->name('appointments.showByDate');
+Route::delete('/admin/appointments/{appointment}', [AppointmentsController::class, 'destroy'])->name('appointments.destroy');
+
 
 require __DIR__.'/auth.php';

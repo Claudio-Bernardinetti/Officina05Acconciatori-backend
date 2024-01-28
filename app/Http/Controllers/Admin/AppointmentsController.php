@@ -16,9 +16,26 @@ class AppointmentsController extends Controller
 {
     public function index()
     {
-        $appointments = Appointment::all();
+        $appointments = Appointment::with(['customer', 'hairdresser'])->get();
 
-    return view('admin.appointments.index', ['appointments' => $appointments]);
+    $events = $appointments->map(function ($appointment) {
+        // Assegna un colore in base al nome del parrucchiere
+        $color = 'blue'; // Colore predefinito
+        if ($appointment->hairdresser->name == 'Elia') {
+            $color = 'green';
+        } elseif ($appointment->hairdresser->name == 'Francesca') {
+            $color = 'red';
+        }
+
+        return [
+            'title' => $appointment->customer->name . ' - ' . $appointment->appointment_slot, //  Nome del cliente e slot
+            'start' => $appointment->appointment_date,
+            'color' => $color, // Colore dell'evento
+            // 'end' => ... se hai una data di fine
+        ];
+    });
+
+    return view('admin.appointments.index', ['events' => $events]);
     }
 
     public function create(Request $request)
@@ -65,6 +82,15 @@ class AppointmentsController extends Controller
             'phone' => 'required', 
             // Aggiungi qui altre validazioni se necessario
         ]);
+        // Controlla se la slot è già prenotata per quella data
+        $existingAppointment = Appointment::where('hairdresser_id', $validatedData['hairdresser_id'])
+        ->where('appointment_date', $validatedData['appointment_date'])
+        ->where('appointment_slot', $validatedData['appointment_slot'])
+        ->first();
+
+        if ($existingAppointment) {
+        return response()->json(['error' => 'Questa slot è già prenotata per il parrucchiere e la data selezionati.'], 409);
+        }
 
         // Creare un nuovo cliente
     $customer = new Customer;
@@ -89,9 +115,13 @@ class AppointmentsController extends Controller
     }
 
 
-    public function show(Appointment $appointment)
+    public function showByDate($date)
     {
-        return response()->json($appointment);
+        $appointments = Appointment::with(['customer', 'hairdresser'])
+                            ->where('appointment_date', $date)
+                            ->get();
+    
+        return view('admin.appointments.show', ['appointments' => $appointments, 'date' => $date]);
     }
 
     public function edit(Appointment $appointment)
@@ -111,9 +141,6 @@ class AppointmentsController extends Controller
     public function destroy(Appointment $appointment)
     {
         $appointment->delete();
-
-        // Aggiungi il codice per cancellare un evento nel calendario di Google qui
-
-        return response()->json('Appointment deleted successfully');
+        return redirect()->back()->with('success', 'Appuntamento cancellato con successo.');
     }
 }
