@@ -11,8 +11,8 @@ class Customer extends Model
 
     protected $fillable = [
         'name',
-        'category',
-        // Aggiungi qui altri campi se necessario
+        'email',   // ✅ aggiunto
+        'phone',   // ✅ aggiunto
     ];
 
     public function appointments()

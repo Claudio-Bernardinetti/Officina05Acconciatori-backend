@@ -39,33 +39,35 @@ class AppointmentsController extends Controller
     }
 
     public function create(Request $request)
-    {
-        // $validator = Validator::make($request->all(), [
-        //     'customer_id' => 'required',
-        //     'hairdresser_id' => 'required',
-        //     'slot' => 'required',
-        //     'description' => 'required',
-        // ]);
+{
+    $customers = Customer::all();
+    $hairdressers = Hairdresser::all();
+    $availableSlots = [];
+    
+    $date = $request->query('date'); // ✅ prende la data dalla query string
 
-        // if ($validator->fails()) {
-        //     return response()->json($validator->errors(), 400);
-        // }
+    if ($date) {
+        $openingTime = 9;
+        $closingTime = 19;
 
-        $appointment = new Appointment;
-        $appointment->customer_id = $request->customer_id;
-        $appointment->hairdresser_id = $request->hairdresser_id;
-        $appointment->appointment_date = $request->appointment_date;
-        $appointment->appointment_slot = $request->appointment_slot;
-        $appointment->description = $request->description;
-        $appointment->save();
+        for ($hour = $openingTime; $hour < $closingTime; $hour++) {
+            foreach ([0, 30] as $minutes) {
+                $slot = sprintf('%02d:%02d', $hour, $minutes);
 
-        // Aggiungi il codice per creare un evento nel calendario di Google qui
+                $isBooked = Appointment::where('appointment_date', $date)
+                    ->where('appointment_slot', $slot)
+                    ->exists();
 
-        return response()->json($appointment);
-        
-        // ... altri metodi ...
+                if (!$isBooked) {
+                    $availableSlots[] = $slot;
+                }
+                // ✅ dd() rimosso!
+            }
+        }
     }
 
+    return view('admin.appointments.create', compact('customers', 'hairdressers', 'date', 'availableSlots'));
+}
 
     
 
@@ -79,41 +81,37 @@ class AppointmentsController extends Controller
             'appointment_slot' => 'required',
             'description' => 'nullable',
             'email' => 'required|email',
-            'phone' => 'required', 
-            // Aggiungi qui altre validazioni se necessario
+            'phone' => 'required',
+            'customer_id' => 'sometimes|exists:customers,id', // 'sometimes' indica che il campo potrebbe non essere presente
         ]);
-        // Controlla se la slot è già prenotata per quella data
-        $existingAppointment = Appointment::where('hairdresser_id', $validatedData['hairdresser_id'])
-        ->where('appointment_date', $validatedData['appointment_date'])
-        ->where('appointment_slot', $validatedData['appointment_slot'])
-        ->first();
 
-        if ($existingAppointment) {
-        return response()->json(['error' => 'Questa slot è già prenotata per il parrucchiere e la data selezionati.'], 409);
+        // Controlla se la slot è già prenotata
+        if (Appointment::where('hairdresser_id', $validatedData['hairdresser_id'])
+            ->where('appointment_date', $validatedData['appointment_date'])
+            ->where('appointment_slot', $validatedData['appointment_slot'])
+            ->exists()) {
+            return response()->json(['error' => 'Questa slot è già prenotata.'], 409);
         }
 
-        // Creare un nuovo cliente
-    $customer = new Customer;
-    $customer->name = $validatedData['name'];
-    $customer->email = $validatedData['email'];
-    $customer->phone = $validatedData['phone']; 
-    // Imposta altri campi necessari per Customer
-    $customer->save();
+        // Creare un nuovo cliente se non viene fornito un customer_id
+        if (empty($validatedData['customer_id'])) {
+            $customer = Customer::firstOrCreate(
+                ['email' => $validatedData['email']],
+                [
+                    'name'  => $validatedData['name'],
+                    'phone' => $validatedData['phone'],
+                ]
+            );
+            $validatedData['customer_id'] = $customer->id;
+        }
 
-    // Crea un nuovo appuntamento con l'ID del cliente appena creato
-    $appointment = new Appointment;
-    $appointment->customer_id = $customer->id;
-    // Imposta altri campi per Appointment
-    $appointment->hairdresser_id = $validatedData['hairdresser_id'];
-    $appointment->appointment_date = $validatedData['appointment_date'];
-    $appointment->appointment_slot = $validatedData['appointment_slot'];
-    $appointment->description = $validatedData['description'] ?? null;
-    $appointment->save();
+        // Crea un nuovo appuntamento
+        $appointment = new Appointment;
+        $appointment->fill($validatedData);
+        $appointment->save();
 
-    return response()->json($appointment);
-        // ... altri metodi ...
+        return response()->json($appointment);
     }
-
 
     public function showByDate($date)
     {
@@ -126,7 +124,7 @@ class AppointmentsController extends Controller
 
     public function edit(Appointment $appointment)
     {
-        // Questo metodo può essere implementato nel frontend
+    return view('admin.appointments.edit', compact('appointment'));
     }
 
     public function update(Request $request, Appointment $appointment)

@@ -12,10 +12,9 @@ class Appointment extends Model
     protected $fillable = [
         'hairdresser_id',
         'customer_id',
-        'appointment_time',
-        'slot',
+        'appointment_date',   // ✅ corretto
+        'appointment_slot',   // ✅ corretto
         'description',
-        // Aggiungi qui altri campi se necessario
     ];
 
     public function customer()
