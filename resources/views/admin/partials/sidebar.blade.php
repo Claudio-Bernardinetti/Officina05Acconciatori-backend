@@ -157,10 +157,11 @@
     <div class="sidebar-divider"></div>
 
     <!-- Prodotti -->
+    <!-- Prodotti -->
     <div class="sidebar-section-label">Prodotti</div>
     <ul class="sidebar-nav">
         <li>
-            <a href="">
+            <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.index') ? 'active' : '' }}">
                 <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                     <path d="M2 2h2l2 7h6l1-4H5" />
                     <circle cx="7" cy="13" r="1" />
@@ -170,7 +171,8 @@
             </a>
         </li>
         <li>
-            <a href="">
+            <a href="{{ route('products.create') }}"
+                class="{{ request()->routeIs('products.create') ? 'active' : '' }}">
                 <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                     <rect x="2" y="2" width="12" height="12" rx="2" />
                     <path d="M8 5v6M5 8h6" />
@@ -178,6 +180,24 @@
                 Aggiungi Prodotto
             </a>
         </li>
+    </ul>
+    <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M2 2h2l2 7h6l1-4H5" />
+        <circle cx="7" cy="13" r="1" />
+        <circle cx="12" cy="13" r="1" />
+    </svg>
+    Prodotti
+    </a>
+    </li>
+    <li>
+        <a href="">
+            <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="2" width="12" height="12" rx="2" />
+                <path d="M8 5v6M5 8h6" />
+            </svg>
+            Aggiungi Prodotto
+        </a>
+    </li>
     </ul>
 
     <div class="sidebar-divider"></div>
