@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AppointmentsController;
+use App\Http\Controllers\Admin\ProductsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,3 +45,10 @@ Route::delete('/admin/appointments/{appointment}', [AppointmentsController::clas
 
 
 require __DIR__.'/auth.php';
+// ── Prodotti ──
+Route::get('/admin/products', [ProductsController::class, 'index'])->name('products.index');
+Route::get('/admin/products/create', [ProductsController::class, 'create'])->name('products.create');
+Route::post('/admin/products', [ProductsController::class, 'store'])->name('products.store');
+Route::get('/admin/products/{product}/edit', [ProductsController::class, 'edit'])->name('products.edit');
+Route::put('/admin/products/{product}', [ProductsController::class, 'update'])->name('products.update');
+Route::delete('/admin/products/{product}', [ProductsController::class, 'destroy'])->name('products.destroy');

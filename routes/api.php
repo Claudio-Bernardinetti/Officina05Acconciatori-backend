@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AppointmentsController;
+use App\Http\Controllers\Admin\ProductsController;
 
 
 /*
@@ -23,3 +24,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/appointments', [AppointmentsController::class, 'store']);
 
 Route::get('/appointments', [AppointmentsController::class, 'index']);
+// ── Prodotti (pubblico per il frontend Vue) ──
+Route::get('/products', [ProductsController::class, 'apiIndex']);
